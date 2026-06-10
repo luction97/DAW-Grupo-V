@@ -59,11 +59,44 @@ Una vez iniciado el servidor, puedes visualizar los endpoints y realizar pruebas
 5. Copiá toda esa cadena de texto larga (sin las comillas). Ese es tu token.
 6. Subí arriba de todo en Swagger, hacé clic en el botón verde **"Authorize"**, pegá tu token y dale a confirmar. ¡Ya podés usar toda la API!
 
+## 🚢 Despliegue con PM2 (Producción)
+
+Para ejecutar el backend en modo producción con PM2:
+
+1. **Compilar el proyecto:**
+   ```bash
+   npm run build
+   ```
+
+2. **Iniciar con PM2:**
+   ```bash
+   npm run deploy
+   ```
+   Esto ejecuta `npm run build && pm2 start ecosystem.config.js`.
+
+3. **Verificar el estado:**
+   ```bash
+   pm2 status
+   ```
+
+4. **Ver logs:**
+   ```bash
+   pm2 logs gestor-de-proyectos
+   ```
+
+5. **Detener la aplicación:**
+   ```bash
+   pm2 stop gestor-de-proyectos
+   ```
+
+> **Nota:** La configuración de PM2 está en `ecosystem.config.js`. El backend corre en el puerto `4000` en producción. Se espera que nginx actúe como reverse proxy, redirigiendo las rutas `/v1/*` hacia `http://127.0.0.1:4000/v1/`.
+
 ## 🛠️ Tecnologías Utilizadas
 
 - **Core**: [NestJS](https://nestjs.com/)
 - **Base de Datos**: [PostgreSQL](https://www.postgresql.org/) & [TypeORM](https://typeorm.io/)
-- **Despliegue**: [PM2](https://pm2.keymetrics.io/)
+- **Gestor de Procesos**: [PM2](https://pm2.keymetrics.io/) (v7.x)
+- **Reverse Proxy**: [NGINX](https://nginx.org/) (v1.30.2)
 
 ## 👥 Equipo de Desarrollo
 
