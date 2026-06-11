@@ -59,6 +59,14 @@
   gap: 0.5rem;
 }
 
+.topbar--hidden {
+  display: none;
+}
+
+.main-content--full {
+  margin-top: 0;
+}
+
 .main-content {
   margin-top: 64px;
   flex: 1;
@@ -78,7 +86,7 @@
     display: none;
   }
 
-  .main-content {
+.main-content {
     padding: 1rem;
   }
 }

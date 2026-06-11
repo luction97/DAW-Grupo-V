@@ -1,0 +1,40 @@
+<p-dialog [header]="header()" [modal]="true" [(visible)]="visible" [style]="{ width: '28rem' }"
+    (onHide)="cerrar()">
+    <form [formGroup]="form" class="gestion-form">
+        <div class="gestion-form-body">
+            <div class="field">
+                <label for="nombre" class="field-label">Nombre del proyecto</label>
+                <input pInputText type="text" id="nombre" placeholder="Ej: Migración cloud" formControlName="nombre" />
+            </div>
+            <div class="field">
+                <label for="cliente" class="field-label">Cliente</label>
+                <p-select
+                    formControlName="cliente"
+                    [options]="clientes()"
+                    optionLabel="nombre"
+                    placeholder="Seleccionar cliente"
+                    [filter]="true"
+                    filterBy="nombre"
+                    appendTo="body"
+                >
+                    <ng-template pTemplate="footer">
+                        <div class="create-client-footer" (click)="nuevoCliente()">
+                            <span>+ Crear nuevo cliente</span>
+                        </div>
+                    </ng-template>
+                </p-select>
+            </div>
+            @if (proyectoActual()) {
+            <div class="field">
+                <label for="estado" class="field-label">Estado</label>
+                <p-select id="estado" formControlName="estado" [options]="estados()" placeholder="Seleccionar estado" appendTo="body" />
+            </div>
+            }
+        </div>
+        <div class="gestion-form-footer">
+            <button pButton label="Cancelar" (click)="cerrar()" severity="secondary"></button>
+            <button pButton label="Guardar" (click)="enviarProyecto()" severity="primary"></button>
+        </div>
+    </form>
+</p-dialog>
+<app-editor-cliente [(visible)]="crearClienteVisible"></app-editor-cliente>

@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { Login } from './auth/login/login';
-import { TareasListado } from './proyectos/tareas/listado/tareas-listado';
-import { ProyectosListado } from './proyectos/listado/proyectos-listado';
+import { ListaTareas } from './proyectos/tareas/listado/lista-tareas';
+import { ListaProyectos } from './proyectos/listado/lista-proyectos';
 
 export const routes: Routes = [
     {
@@ -10,11 +10,11 @@ export const routes: Routes = [
     },
     {
         path: 'proyectos/:id/tareas',
-        component: TareasListado
+        component: ListaTareas
     },
     {
         path: 'proyectos',
-        component: ProyectosListado
+        component: ListaProyectos
     },
     {
         path: "**",
