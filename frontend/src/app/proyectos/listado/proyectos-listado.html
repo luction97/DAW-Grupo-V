@@ -1,0 +1,45 @@
+<app-template>
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-text">
+        <div class="page-title-row">
+          <svg lucideFolderKanban [size]="22" class="page-title-icon"></svg>
+          <h1 class="page-title">Proyectos</h1>
+        </div>
+        <p class="page-subtitle">
+          {{ proyectos().filter(p => p.estado === 'ACTIVO').length }} activos
+          @if (proyectos().filter(p => p.estado === 'FINALIZADO').length > 0) {
+            &nbsp;· {{ proyectos().filter(p => p.estado === 'FINALIZADO').length }} finalizados
+          }
+        </p>
+      </div>
+      <p-button id="boton-crear-proyecto" icon="pi pi-plus" label="Crear Proyecto" (click)="crearProyecto()" severity="primary"></p-button>
+    </div>
+
+    @if (proyectos().length > 0) {
+      <div class="proyectos-grid">
+        @for (proyecto of proyectos(); track proyecto.id) {
+          <div class="proyecto-card" tabindex="0" (click)="gestionarTareas(proyecto)" (keydown.enter)="gestionarTareas(proyecto)">
+            <div class="card-top">
+              <p-tag [value]="proyecto.estado" [severity]="proyecto.estado === 'ACTIVO' ? 'success' : proyecto.estado === 'FINALIZADO' ? 'info' : 'danger'" />
+              <p-button icon="pi pi-pencil" pTooltip="Editar proyecto" (click)="editarProyecto(proyecto); $event.stopPropagation()" severity="secondary" [rounded]="true" [text]="true"></p-button>
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">{{ proyecto.nombre }}</h3>
+              @if (proyecto.cliente) {
+                <p class="card-client">{{ proyecto.cliente.nombre }}</p>
+              } @else {
+                <p class="card-client card-client-empty">Sin cliente asignado</p>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <p>No se encontraron proyectos. Creá el primero para comenzar.</p>
+      </div>
+    }
+  </div>
+</app-template>
+<app-gestion-proyecto [(visible)]="dialogVisible" [(proyectoSeleccionado)]="proyectoSeleccionado"></app-gestion-proyecto>

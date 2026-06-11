@@ -1,0 +1,21 @@
+<p-dialog [header]="header()" [modal]="true" [(visible)]="visible" [style]="{ width: '28rem' }"
+    (onHide)="cerrarDialog()">
+    <form [formGroup]="form" class="gestion-form">
+        <div class="gestion-form-body">
+            <div class="field">
+                <label for="descripcion" class="field-label">Descripción de la tarea</label>
+                <input pInputText type="text" id="descripcion" placeholder="Ej: Diseñar módulo de facturación" formControlName="descripcion" />
+            </div>
+            @if (tareaSeleccionada()) {
+            <div class="field">
+                <label for="estado" class="field-label">Estado</label>
+                <p-select id="estado" formControlName="estado" [options]="estados()" placeholder="Seleccionar estado" appendTo="body" />
+            </div>
+            }
+        </div>
+        <div class="gestion-form-footer">
+            <button pButton label="Cancelar" (click)="cerrarDialog()" severity="secondary"></button>
+            <button pButton label="Guardar" (click)="guardarTarea()" severity="primary"></button>
+        </div>
+    </form>
+</p-dialog>

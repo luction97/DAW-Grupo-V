@@ -1,0 +1,48 @@
+<app-template>
+  <div class="page">
+    <div class="project-context">
+      <div class="project-context-header">
+        <div class="project-context-title-row">
+          <svg lucideClipboardList [size]="20" class="context-title-icon"></svg>
+          <h1 class="project-context-title">{{ proyecto()?.nombre }}</h1>
+        </div>
+        <p-button id="boton-crear-tarea" icon="pi pi-plus" label="Crear Tarea" (click)="crearTarea()" severity="primary"></p-button>
+      </div>
+      <div class="project-context-meta">
+        @if (proyecto()?.cliente) {
+          <div class="meta-item">
+            <span class="meta-label">Cliente</span>
+            <span class="meta-value">{{ proyecto()?.cliente }}</span>
+          </div>
+        }
+        <div class="meta-item">
+          <span class="meta-label">Estado</span>
+          <p-tag [value]="proyecto()?.estado" [severity]="proyecto()?.estado === 'ACTIVO' ? 'success' : proyecto()?.estado === 'FINALIZADO' ? 'info' : 'danger'" />
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Tareas</span>
+          <span class="meta-value">{{ tareas().length }}</span>
+        </div>
+      </div>
+    </div>
+
+    @if (tareas().length > 0) {
+      <div class="tareas-list">
+        @for (tarea of tareas(); track tarea.id) {
+          <div class="tarea-item">
+            <span class="tarea-indicator" [class]="'indicator-' + (tarea.estado === 'FINALIZADA' ? 'FINALIZADA' : tarea.estado === 'PENDIENTE' ? 'PENDIENTE' : 'BAJA')"></span>
+            <span class="tarea-desc">{{ tarea.descripcion }}</span>
+            <div class="tarea-actions">
+              <p-button icon="pi pi-pencil" pTooltip="Editar tarea" (click)="editarTarea(tarea)" severity="secondary" [rounded]="true" [text]="true"></p-button>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <p>No se encontraron tareas para este proyecto. Creá la primera para comenzar.</p>
+      </div>
+    }
+  </div>
+</app-template>
+<app-gestion-tarea [(visible)]="dialogVisible" [idProyecto]="idProyecto()" [(tareaSeleccionada)]="tareaSeleccionada"></app-gestion-tarea>

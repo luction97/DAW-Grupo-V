@@ -1,0 +1,39 @@
+<p-dialog [header]="header()" [modal]="true" [(visible)]="visible" [style]="{ width: '28rem' }"
+    (onHide)="cerrarDialog()">
+    <form [formGroup]="form" class="gestion-form">
+        <div class="gestion-form-body">
+            <div class="field">
+                <label for="nombre" class="field-label">Nombre del proyecto</label>
+                <input pInputText type="text" id="nombre" placeholder="Ej: Migración cloud" formControlName="nombre" />
+            </div>
+            <div class="field">
+                <label for="cliente" class="field-label">Cliente</label>
+                <div class="cliente-field-row">
+                    <p-select
+                        formControlName="cliente"
+                        [options]="clientes()"
+                        optionLabel="nombre"
+                        placeholder="Seleccionar cliente"
+                        [showClear]="true"
+                        [filter]="true"
+                        filterBy="nombre"
+                        appendTo="body"
+                    />
+                    <button pButton icon="pi pi-plus" severity="secondary" [rounded]="true" [text]="true"
+                        (click)="abrirCrearCliente()" pTooltip="Crear nuevo cliente"></button>
+                </div>
+            </div>
+            @if (proyectoSeleccionado()) {
+            <div class="field">
+                <label for="estado" class="field-label">Estado</label>
+                <p-select id="estado" formControlName="estado" [options]="estados()" placeholder="Seleccionar estado" appendTo="body" />
+            </div>
+            }
+        </div>
+        <div class="gestion-form-footer">
+            <button pButton label="Cancelar" (click)="cerrarDialog()" severity="secondary"></button>
+            <button pButton label="Guardar" (click)="guardarProyecto()" severity="primary"></button>
+        </div>
+    </form>
+</p-dialog>
+<app-gestion-cliente [(visible)]="dialogCrearClienteVisible"></app-gestion-cliente>

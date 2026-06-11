@@ -1,0 +1,14 @@
+<header class="topbar">
+  <div class="topbar-brand">
+    <img src="/assets/isotipo.webp" alt="PROYECTUM" class="topbar-isotipo" />
+    <span class="topbar-logo">PROYECTUM</span>
+    <span class="topbar-divider"></span>
+    <span class="topbar-subtitle">Plataforma Empresarial</span>
+  </div>
+  <div class="topbar-actions">
+    <p-button id="boton-cerrar-sesion" icon="pi pi-sign-out" (click)="cerrarSesion()" severity="secondary" [rounded]="true" [text]="true" pTooltip="Cerrar sesión"></p-button>
+  </div>
+</header>
+<main class="main-content">
+  <ng-content></ng-content>
+</main>
