@@ -59,7 +59,7 @@ lerna-debug.log*
 .vscode
 
 # Carpetas temporalmente ignoradas por el usuario
-/frontend
+frontend
 /docs
 
 # Entorno y variables secretas
