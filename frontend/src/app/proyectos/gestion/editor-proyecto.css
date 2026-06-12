@@ -43,3 +43,14 @@
 .create-client-footer:hover {
   background: #F8FAFC;
 }
+
+::ng-deep p-datepicker input.p-inputtext {
+  cursor: pointer;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+::ng-deep p-datepicker input.p-inputtext:hover {
+  background: #F8FAFC;
+  border-color: var(--color-brand-blue);
+}

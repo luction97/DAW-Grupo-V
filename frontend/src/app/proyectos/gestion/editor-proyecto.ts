@@ -4,6 +4,7 @@ import { DialogModule } from "primeng/dialog";
 import { EstadoProyecto } from "../estado-proyecto";
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
+import { DatePicker } from 'primeng/datepicker';
 import { ProyectoItem } from "../listado/proyecto-item";
 import { MessageService, PrimeTemplate } from "primeng/api";
 import { EditorProyectoApi } from "./editor-proyecto-api";
@@ -19,7 +20,7 @@ import { EstadoCliente } from "../clientes/estado-cliente";
     selector: "app-editor-proyecto",
     templateUrl: "./editor-proyecto.html",
     styleUrls: ["./editor-proyecto.css"],
-    imports: [DialogModule, InputTextModule, SelectModule, ButtonModule, ReactiveFormsModule, EditorCliente, PrimeTemplate]
+    imports: [DialogModule, InputTextModule, SelectModule, DatePicker, ButtonModule, ReactiveFormsModule, EditorCliente, PrimeTemplate]
 })
 export class EditorProyecto {
 
@@ -51,6 +52,7 @@ export class EditorProyecto {
 
     readonly form: FormGroup = new FormGroup({
         nombre: new FormControl("", [Validators.required]),
+        fechaObjetivo: new FormControl<Date | null>(null),
         cliente: new FormControl(null),
         estado: new FormControl(null)
     });
@@ -63,6 +65,7 @@ export class EditorProyecto {
                     this.ultimoProyectoId = proyecto.id;
                     this.form.patchValue({
                         nombre: proyecto.nombre ?? "",
+                        fechaObjetivo: proyecto.fechaObjetivo ? this.parseFecha(proyecto.fechaObjetivo) : null,
                         cliente: proyecto.cliente ?? null,
                         estado: proyecto.estado ?? null
                     });
@@ -72,6 +75,7 @@ export class EditorProyecto {
                 this.ultimoProyectoId = null;
                 this.form.reset({
                     nombre: "",
+                    fechaObjetivo: null,
                     cliente: null,
                     estado: EstadoProyecto.ACTIVO
                 });
@@ -113,6 +117,7 @@ export class EditorProyecto {
         this.visible.set(false);
         this.form.reset({
             nombre: "",
+            fechaObjetivo: null,
             cliente: null,
             estado: EstadoProyecto.ACTIVO
         });
@@ -131,7 +136,8 @@ export class EditorProyecto {
             const dto: ActualizarProyecto = {
                 nombre: formRawValue.nombre,
                 idCliente: formRawValue.cliente ? formRawValue.cliente.id : null,
-                estado: formRawValue.estado
+                estado: formRawValue.estado,
+                fechaObjetivo: formRawValue.fechaObjetivo ? this.formatFecha(formRawValue.fechaObjetivo) : null
             };
             this.EditorProyectoApi.actualizarProyecto(this.proyectoActual()?.id!, dto).subscribe({
                 next: () => {
@@ -152,7 +158,8 @@ export class EditorProyecto {
         } else {
             const dto: CrearProyecto = {
                 nombre: formRawValue.nombre,
-                idCliente: formRawValue.cliente ? formRawValue.cliente.id : null
+                idCliente: formRawValue.cliente ? formRawValue.cliente.id : null,
+                fechaObjetivo: formRawValue.fechaObjetivo ? this.formatFecha(formRawValue.fechaObjetivo) : null
             };
             this.EditorProyectoApi.crearProyecto(dto).subscribe({
                 next: () => {
@@ -176,6 +183,18 @@ export class EditorProyecto {
     nuevoCliente(): void {
         this.clientesAntes = this.clientes().length;
         this.crearClienteVisible.set(true);
+    }
+
+    private parseFecha(fechaStr: string): Date {
+        const [y, m, d] = fechaStr.split('-').map(Number);
+        return new Date(y, m - 1, d);
+    }
+
+    private formatFecha(fecha: Date): string {
+        const year = fecha.getFullYear();
+        const month = String(fecha.getMonth() + 1).padStart(2, '0');
+        const day = String(fecha.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
 }

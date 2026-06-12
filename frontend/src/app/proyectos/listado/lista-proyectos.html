@@ -30,6 +30,23 @@
               } @else {
                 <p class="card-client card-client-empty">Sin cliente asignado</p>
               }
+              @if (proyecto.fechaObjetivo) {
+                @let estado = calcularEstadoTemporal(proyecto);
+                @if (estado) {
+                  <div class="card-temporal">
+                    <p-tag [value]="estado.texto" [severity]="estado.severity" />
+                    <span class="temporal-dias">
+                      @if (estado.dias > 0) {
+                        {{ estado.dias }} día(s) restante(s)
+                      } @else if (estado.dias === 0) {
+                        Vence hoy
+                      } @else {
+                        {{ -estado.dias }} día(s) de retraso
+                      }
+                    </span>
+                  </div>
+                }
+              }
             </div>
           </div>
         }

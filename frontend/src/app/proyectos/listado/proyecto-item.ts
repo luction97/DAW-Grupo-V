@@ -4,5 +4,6 @@ export interface ProyectoItem{
     id: number;
     nombre: string;
     estado: string;
+    fechaObjetivo: string;
     cliente: ClienteItem;
 }
