@@ -12,7 +12,41 @@
           }
         </p>
       </div>
-      <p-button id="boton-crear-proyecto" icon="pi pi-plus" label="Crear Proyecto" (click)="nuevoProyecto()" severity="primary"></p-button>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <p-button id="boton-crear-proyecto" icon="pi pi-plus" label="Crear Proyecto" (click)="nuevoProyecto()" severity="primary"></p-button>
+      </div>
+    </div>
+
+    <!-- Sección de Accesos Rápidos Modulares (Aislamiento de Funcionalidades) -->
+    <div class="modulos-shortcuts-panel" style="display: flex; gap: 1rem; margin-bottom: 2rem; width: 100%;">
+      
+      <!-- Acceso: Agenda de Contactos (Funcionalidad Agustín) -->
+      <div class="shortcut-card" (click)="navegarA('agenda')" style="flex: 1; border: 1px solid #cbd5e1; padding: 1rem; border-radius: 8px; background: #ffffff; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 0.75rem;">
+        <i class="pi pi-address-book" style="font-size: 1.75rem; color: #6366f1;"></i>
+        <div style="display: flex; flex-direction: column;">
+          <span style="font-weight: 600; font-size: 1rem; color: #1e293b;">Agenda de Clientes</span>
+          <span style="font-size: 0.8rem; color: #64748b;">Contactos y teléfonos</span>
+        </div>
+      </div>
+
+      <!-- Acceso: Panel de Estadísticas y Tareas (Funcionalidad Maxi) -->
+      <div class="shortcut-card" (click)="navegarA('dashboard-global')" style="flex: 1; border: 1px solid #cbd5e1; padding: 1rem; border-radius: 8px; background: #ffffff; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 0.75rem;">
+        <i class="pi pi-chart-bar" style="font-size: 1.75rem; color: #10b981;"></i>
+        <div style="display: flex; flex-direction: column;">
+          <span style="font-weight: 600; font-size: 1rem; color: #1e293b;">Estadísticas Avanzadas</span>
+          <span style="font-size: 0.8rem; color: #64748b;">Métricas y Kanban global</span>
+        </div>
+      </div>
+
+      <!-- Acceso: Búsqueda Avanzada (Funcionalidad Martín) -->
+      <div class="shortcut-card" (click)="navegarA('busqueda')" style="flex: 1; border: 1px solid #cbd5e1; padding: 1rem; border-radius: 8px; background: #ffffff; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 0.75rem;">
+        <i class="pi pi-search-plus" style="font-size: 1.75rem; color: #f59e0b;"></i>
+        <div style="display: flex; flex-direction: column;">
+          <span style="font-weight: 600; font-size: 1rem; color: #1e293b;">Búsqueda Completa</span>
+          <span style="font-size: 0.8rem; color: #64748b;">Filtros y ordenamiento</span>
+        </div>
+      </div>
+
     </div>
 
     @if (proyectos().length > 0) {

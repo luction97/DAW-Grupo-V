@@ -1,0 +1,54 @@
+<div class="p-4">
+  <div class="p-4">
+    <div style="margin-bottom: 1rem;">
+      <p-button label="Volver a Proyectos" icon="pi pi-arrow-left" [text]="true" severity="secondary"
+        (click)="volverAProyectos()"></p-button>
+    </div>
+
+  </div>
+
+  <p-card header="Agenda de Contactos (Clientes)">
+    <p-table [value]="clientes()" [rows]="10" [paginator]="true" styleClass="p-datatable-striped">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Cliente</th>
+          <th>Teléfono</th>
+          <th>Correo Electrónico</th>
+          <th style="width: 8rem">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-cliente>
+        <tr>
+          <td>{{ cliente.nombre }}</td>
+          <td>
+            @if (clienteEditandoId() === cliente.id) {
+            <input pInputText type="text" [(ngModel)]="cliente.telefono" class="p-inputtext-sm w-full"
+              placeholder="Ej: +54 345..." />
+            } @else {
+            <span><i class="pi pi-phone mr-2" style="color: #64748b"></i>{{ cliente.telefono || 'Sin registrar'
+              }}</span>
+            }
+          </td>
+          <td>
+            @if (clienteEditandoId() === cliente.id) {
+            <input pInputText type="email" [(ngModel)]="cliente.email" class="p-inputtext-sm w-full"
+              placeholder="correo@cliente.com" />
+            } @else {
+            <span><i class="pi pi-envelope mr-2" style="color: #64748b"></i>{{ cliente.email || 'Sin registrar'
+              }}</span>
+            }
+          </td>
+          <td>
+            @if (clienteEditandoId() === cliente.id) {
+            <p-button icon="pi pi-check" severity="success" [rounded]="true" [text]="true"
+              (click)="guardarContacto(cliente)"></p-button>
+            } @else {
+            <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true"
+              (click)="activarEdicion(cliente.id)"></p-button>
+            }
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+</div>
