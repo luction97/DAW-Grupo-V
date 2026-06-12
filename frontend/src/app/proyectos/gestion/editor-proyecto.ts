@@ -111,6 +111,11 @@ export class EditorProyecto {
     cerrar(): void {
         this.proyectoActual.set(null);
         this.visible.set(false);
+        this.form.reset({
+            nombre: "",
+            cliente: null,
+            estado: EstadoProyecto.ACTIVO
+        });
     }
 
     enviarProyecto(): void {
