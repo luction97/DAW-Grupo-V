@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { Login } from './auth/login/login';
 import { ListaTareas } from './proyectos/tareas/listado/lista-tareas';
 import { ListaProyectos } from './proyectos/listado/lista-proyectos';
+import { PanelTareasEstadisticas } from './proyectos/tareas/listado/panel-tareas-estadisticas/tareas_estadisticas';
 
 export const routes: Routes = [
     {
@@ -11,6 +12,10 @@ export const routes: Routes = [
     {
         path: 'proyectos/:id/tareas',
         component: ListaTareas
+    },
+    {
+        path: 'proyectos/dashboard-global',
+        component: PanelTareasEstadisticas
     },
     {
         path: 'proyectos',

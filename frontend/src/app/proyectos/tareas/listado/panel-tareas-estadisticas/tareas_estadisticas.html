@@ -1,0 +1,94 @@
+<p-toast></p-toast>
+
+<div class="panel-container">
+  <header class="panel-header">
+    <button pButton type="button" icon="pi pi-arrow-left" class="p-button-text p-button-secondary" (click)="volver()">
+      Volver a Proyectos
+    </button>
+    <h2>Dashboard General de Control</h2>
+    <p class="subtitle">Métricas Operativas y Estado Global de Tareas</p>
+  </header>
+
+  <section class="metrics-grid">
+    
+    <div class="card-wrapper">
+      <p-card styleClass="metric-card total">
+        <div class="metric-content">
+          <div class="metric-text">
+            <span class="label">Proyectos Activos</span>
+            <span class="value">{{ proyectosActivosCount() }}</span>
+          </div>
+          <i class="pi pi-briefcase metric-icon-png"></i>
+        </div>
+      </p-card>
+    </div>
+
+    <div class="card-wrapper">
+      <p-card styleClass="metric-card pendiente">
+        <div class="metric-content">
+          <div class="metric-text">
+            <span class="label">Total Pendientes</span>
+            <span class="value">{{ totalTareasPendientes() }}</span>
+          </div>
+          <i class="pi pi-exclamation-circle metric-icon-png"></i>
+        </div>
+      </p-card>
+    </div>
+
+    <div class="card-double-width">
+      <p-card styleClass="metric-card completada">
+        <div class="metric-content" style="display: block;">
+          <span class="label" style="margin-bottom: 0.5rem; display: block;">Proyectos por Cliente</span>
+          <div style="max-height: 80px; overflow-y: auto;">
+            <div *ngFor="let item of proyectosPorCliente()" style="display: flex; justify-content: space-between; margin-bottom: 0.25rem; font-size: 0.9rem;">
+              <strong style="color: #334155;">{{ item.cliente }}:</strong>
+              <span class="badge badge-progreso">{{ item.cantidad }} Proj.</span>
+            </div>
+            <div *ngIf="proyectosPorCliente().length === 0" style="color: #94a3b8; font-size: 0.85rem;">No hay clientes registrados</div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+  </section>
+
+  <section class="kanban-board">
+    
+    <div class="kanban-column column-pendiente">
+      <h3>Pendientes ({{ tareasPendientes().length }})</h3>
+      <div class="card-list">
+        <div class="kanban-card" *ngFor="let tarea of tareasPendientes()">
+          <small style="color: #3b82f6; font-weight: 700; text-transform: uppercase;">{{ tarea.proyectoNombre }}</small>
+          <h4 style="margin-top: 0.25rem;">{{ tarea.descripcion }}</h4>
+          <span class="badge badge-pendiente">Pendiente</span>
+        </div>
+        <div class="empty-state" *ngIf="tareasPendientes().length === 0">Sin tareas pendientes</div>
+      </div>
+    </div>
+
+    <div class="kanban-column column-progreso">
+      <h3>En Progreso ({{ tareasEnProgreso().length }})</h3>
+      <div class="card-list">
+        <div class="kanban-card" *ngFor="let tarea of tareasEnProgreso()">
+          <small style="color: #3b82f6; font-weight: 700; text-transform: uppercase;">{{ tarea.proyectoNombre }}</small>
+          <h4 style="margin-top: 0.25rem;">{{ tarea.descripcion }}</h4>
+          <span class="badge badge-progreso">En Progreso</span>
+        </div>
+        <div class="empty-state" *ngIf="tareasEnProgreso().length === 0">Sin tareas en progreso</div>
+      </div>
+    </div>
+
+    <div class="kanban-column column-completada">
+      <h3>Finalizadas ({{ tareasFinalizadas().length }})</h3>
+      <div class="card-list">
+        <div class="kanban-card" *ngFor="let tarea of tareasFinalizadas()">
+          <small style="color: #3b82f6; font-weight: 700; text-transform: uppercase;">{{ tarea.proyectoNombre }}</small>
+          <h4 style="margin-top: 0.25rem;">{{ tarea.descripcion }}</h4>
+          <span class="badge badge-completada">Finalizada</span>
+        </div>
+        <div class="empty-state" *ngIf="tareasFinalizadas().length === 0">Sin tareas finalizadas</div>
+      </div>
+    </div>
+
+  </section>
+</div>
