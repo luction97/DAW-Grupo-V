@@ -28,6 +28,7 @@ export class EditorProyecto {
     readonly crearClienteVisible: WritableSignal<boolean> = signal<boolean>(false);
 
     private clientesAntes: number = 0;
+    private ultimoProyectoId: number | null = null;
 
     proyectoActual: ModelSignal<ProyectoItem | null> = model<ProyectoItem | null>(null);
 
@@ -56,14 +57,19 @@ export class EditorProyecto {
 
     constructor() {
         effect(() => {
-            if (this.proyectoActual()) {
-                this.form.patchValue({
-                    nombre: this.proyectoActual()?.nombre,
-                    cliente: this.proyectoActual()?.cliente,
-                    estado: this.proyectoActual()?.estado
-                });
+            const proyecto = this.proyectoActual();
+            if (proyecto) {
+                if (proyecto.id !== this.ultimoProyectoId) {
+                    this.ultimoProyectoId = proyecto.id;
+                    this.form.patchValue({
+                        nombre: proyecto.nombre ?? "",
+                        cliente: proyecto.cliente ?? null,
+                        estado: proyecto.estado ?? null
+                    });
+                }
             }
             else {
+                this.ultimoProyectoId = null;
                 this.form.reset({
                     nombre: "",
                     cliente: null,
