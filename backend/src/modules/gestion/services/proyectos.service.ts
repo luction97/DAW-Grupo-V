@@ -84,6 +84,12 @@ export class ProyectosService {
       dto.id = p.id;
       dto.nombre = p.nombre;
       dto.estado = p.estado;
+      if (p.fechaObjetivo) {
+        dto.fechaObjetivo =
+          typeof p.fechaObjetivo === 'string'
+            ? p.fechaObjetivo
+            : p.fechaObjetivo.toISOString().split('T')[0];
+      }
       if (p.cliente) {
         dto.cliente = new ListClienteDTO();
         dto.cliente.id = p.cliente.id;
@@ -112,6 +118,12 @@ export class ProyectosService {
     const dto = new ProyectoDTO();
     dto.nombre = proyecto.nombre;
     dto.estado = proyecto.estado;
+    if (proyecto.fechaObjetivo) {
+      dto.fechaObjetivo =
+        typeof proyecto.fechaObjetivo === 'string'
+          ? proyecto.fechaObjetivo
+          : proyecto.fechaObjetivo.toISOString().split('T')[0];
+    }
     if (proyecto.cliente) {
       dto.cliente = proyecto.cliente.nombre;
     }

@@ -7,6 +7,10 @@
                 <input pInputText type="text" id="nombre" placeholder="Ej: Migración cloud" formControlName="nombre" />
             </div>
             <div class="field">
+                <label for="fechaObjetivo" class="field-label">Fecha objetivo</label>
+                <p-datePicker id="fechaObjetivo" formControlName="fechaObjetivo" dateFormat="yy-mm-dd" placeholder="Seleccionar fecha límite" [readonlyInput]="true" appendTo="body" />
+            </div>
+            <div class="field">
                 <label for="cliente" class="field-label">Cliente</label>
                 <p-select
                     formControlName="cliente"

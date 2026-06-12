@@ -24,6 +24,9 @@ export class Proyecto {
   @Column({ name: 'id_cliente', nullable: true })
   idCliente!: number | null;
 
+  @Column({ name: 'fecha_objetivo', type: 'date', nullable: true })
+  fechaObjetivo!: Date | null;
+
   @ManyToOne(() => Cliente, { nullable: true })
   @JoinColumn({ name: 'id_cliente' })
   cliente!: Cliente | null;

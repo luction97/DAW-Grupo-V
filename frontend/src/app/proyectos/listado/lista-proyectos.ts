@@ -64,4 +64,17 @@ export class ListaProyectos implements OnInit {
     this.router.navigate(["/proyectos", proyecto.id, "tareas"]);
   }
 
+  calcularEstadoTemporal(proyecto: ProyectoItem): { texto: string; severity: 'success' | 'warn' | 'danger'; dias: number } | null {
+    if (!proyecto.fechaObjetivo) return null;
+    const [y, m, d] = proyecto.fechaObjetivo.split('-').map(Number);
+    const fechaObj = new Date(y, m - 1, d);
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const diffMs = fechaObj.getTime() - hoy.getTime();
+    const dias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    if (dias < 0) return { texto: 'Retrasado', severity: 'danger', dias };
+    if (dias <= 7) return { texto: 'Próximo a vencer', severity: 'warn', dias };
+    return { texto: 'En tiempo', severity: 'success', dias };
+  }
+
 }

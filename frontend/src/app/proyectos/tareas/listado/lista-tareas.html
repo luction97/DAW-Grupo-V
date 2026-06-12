@@ -19,6 +19,18 @@
           <span class="meta-label">Estado</span>
           <p-tag [value]="proyecto()?.estado" [severity]="proyecto()?.estado === 'ACTIVO' ? 'success' : proyecto()?.estado === 'FINALIZADO' ? 'info' : 'danger'" />
         </div>
+        @if (proyecto()?.fechaObjetivo) {
+          @let estado = calcularEstadoTemporal(proyecto()!.fechaObjetivo);
+          @if (estado) {
+            <div class="meta-item">
+              <span class="meta-label">Fecha objetivo</span>
+              <span class="meta-value">
+                {{ proyecto()?.fechaObjetivo }}
+                &nbsp;<p-tag [value]="estado.texto" [severity]="estado.severity" />
+              </span>
+            </div>
+          }
+        }
         <div class="meta-item">
           <span class="meta-label">Tareas</span>
           <span class="meta-value">{{ tareas().length }}</span>

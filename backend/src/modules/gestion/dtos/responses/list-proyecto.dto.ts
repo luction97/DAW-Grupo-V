@@ -13,5 +13,8 @@ export class ListProyectoDTO {
   estado!: EstadosProyectosEnum;
 
   @ApiProperty()
+  fechaObjetivo!: string;
+
+  @ApiProperty()
   cliente!: ListClienteDTO;
 }

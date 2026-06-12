@@ -103,6 +103,18 @@
   font-style: italic;
 }
 
+.card-temporal {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.temporal-dias {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
 /* ── Empty State ── */
 
 .empty-state {
