@@ -14,4 +14,8 @@ export class ProyectosApi {
         return this.httpClient.get<ProyectoItem[]>('/v1/proyectos');
     }
 
+    exportarCsv(): Observable<Blob> {
+        return this.httpClient.get('/v1/proyectos/export/csv', { responseType: 'blob' });
+    }
+
 }
