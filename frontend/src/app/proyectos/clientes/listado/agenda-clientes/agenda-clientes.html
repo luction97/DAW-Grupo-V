@@ -4,29 +4,54 @@
       <p-button label="Volver a Proyectos" icon="pi pi-arrow-left" [text]="true" severity="secondary"
         (click)="volverAProyectos()"></p-button>
     </div>
-
   </div>
 
   <p-card header="Agenda de Contactos (Clientes)">
+    <div style="margin-bottom: 1.25rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+      <p-button [label]="ocultarIncompletos() ? 'Mostrar Todos' : 'Ver Solo Contactos Sin Registrar'"
+        [icon]="ocultarIncompletos() ? 'pi pi-eye' : 'pi pi-exclamation-triangle'"
+        [severity]="ocultarIncompletos() ? 'info' : 'secondary'" [outlined]="true"
+        [disabled]="filtroNombreBuscador() !== ''" (click)="toggleFiltroIncompletos()">
+      </p-button>
+
+      @if (filtroNombreBuscador()) {
+      <div
+        style="display: flex; align-items: center; gap: 0.5rem; background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 0.35rem 0.75rem; border-radius: 6px; color: #1e40af; font-size: 0.9rem;">
+        <span>Filtrado por proyecto: <strong>{{ filtroNombreBuscador() }}</strong></span>
+        <i class="pi pi-times" style="cursor: pointer; font-weight: bold;" (click)="limpiarFiltroBuscador()"></i>
+      </div>
+      }
+    </div>
+
+
     <p-table [value]="clientes()" [rows]="10" [paginator]="true" styleClass="p-datatable-striped">
       <ng-template pTemplate="header">
         <tr>
           <th>Cliente</th>
           <th>Teléfono</th>
           <th>Correo Electrónico</th>
-          <th style="width: 8rem">Acciones</th>
+          <th style="width: 10rem">Acciones</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-cliente>
         <tr>
-          <td>{{ cliente.nombre }}</td>
+          <td style="font-weight: 600; color: #334155;">{{ cliente.nombre }}</td>
           <td>
             @if (clienteEditandoId() === cliente.id) {
             <input pInputText type="text" [(ngModel)]="cliente.telefono" class="p-inputtext-sm w-full"
               placeholder="Ej: +54 345..." />
             } @else {
-            <span><i class="pi pi-phone mr-2" style="color: #64748b"></i>{{ cliente.telefono || 'Sin registrar'
-              }}</span>
+            <span>
+              <i class="pi pi-phone mr-2" style="color: #64748b"></i>
+              @if (cliente.telefono) {
+              <a [href]="'https://wa.me/' + cliente.telefono.replace(' ', '').replace('+', '')" target="_blank"
+                style="color: #10b981; text-decoration: none; font-weight: 500;">
+                {{ cliente.telefono }} <i class="pi pi-whatsapp ml-1" style="font-size: 0.85rem;"></i>
+              </a>
+              } @else {
+              <span style="color: #94a3b8; font-style: italic;">Sin registrar</span>
+              }
+            </span>
             }
           </td>
           <td>
@@ -34,18 +59,28 @@
             <input pInputText type="email" [(ngModel)]="cliente.email" class="p-inputtext-sm w-full"
               placeholder="correo@cliente.com" />
             } @else {
-            <span><i class="pi pi-envelope mr-2" style="color: #64748b"></i>{{ cliente.email || 'Sin registrar'
-              }}</span>
+            <span>
+              <i class="pi pi-envelope mr-2" style="color: #64748b"></i>
+              @if (cliente.email) {
+              <a [href]="'mailto:' + cliente.email" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+                {{ cliente.email }}
+              </a>
+              } @else {
+              <span style="color: #94a3b8; font-style: italic;">Sin registrar</span>
+              }
+            </span>
             }
           </td>
           <td>
-            @if (clienteEditandoId() === cliente.id) {
-            <p-button icon="pi pi-check" severity="success" [rounded]="true" [text]="true"
-              (click)="guardarContacto(cliente)"></p-button>
-            } @else {
-            <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true"
-              (click)="activarEdicion(cliente.id)"></p-button>
-            }
+            <div style="display: flex; gap: 0.25rem;">
+              @if (clienteEditandoId() === cliente.id) {
+              <p-button icon="pi pi-check" severity="success" [rounded]="true" [text]="true"
+                (click)="guardarContacto(cliente)"></p-button>
+              } @else {
+              <p-button icon="pi pi-pencil" severity="secondary" [rounded]="true" [text]="true"
+                (click)="activarEdicion(cliente.id)"></p-button>
+              }
+            </div>
           </td>
         </tr>
       </ng-template>

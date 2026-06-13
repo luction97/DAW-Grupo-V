@@ -1,62 +1,68 @@
 <div class="p-4">
   <div style="margin-bottom: 1rem;">
-    <p-button label="Volver a Proyectos" icon="pi pi-arrow-left" [text]="true" severity="secondary" (click)="volverAProyectos()"></p-button>
+    <p-button label="Volver a Proyectos" icon="pi pi-arrow-left" [text]="true" severity="secondary"
+      (click)="volverAProyectos()"></p-button>
   </div>
 
-  <p-card header="Módulo de Búsqueda Avanzada (Proyectos)">
-    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center;">
-      
-      <div style="flex: 1; min-width: 250px;">
-        <span class="p-input-icon-left w-full" style="position: relative; display: inline-block; width: 100%;">
-          <i class="pi pi-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
-          <input pInputText type="text" [ngModel]="filtroNombre()" (ngModelChange)="filtroNombre.set($event)" 
-                 placeholder="Filtrar por nombre del proyecto..." style="padding-left: 2.5rem; width: 100%;" />
-        </span>
+  <p-card header="Módulo de Búsqueda Avanzada">
+
+    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+      <div style="position: relative; flex: 1; min-width: 250px;">
+        <i class="pi pi-search"
+          style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; z-index: 10; pointer-events: none;"></i>
+        <input pInputText type="text" placeholder="Buscar por proyecto o cliente..." [ngModel]="filtroNombre()"
+          (ngModelChange)="filtroNombre.set($event)" style="width: 100%; padding-left: 2.5rem !important;" />
       </div>
 
-      <div style="width: 200px;">
-        <select [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)" 
-                style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #ffffff; color: #334155; font-family: inherit; font-size: 1rem; outline: none;">
-          @for (opcion of opcionesEstado; track opcion.label) {
-            <option [value]="opcion.value === null ? 'null' : opcion.value">{{ opcion.label }}</option>
-          }
-        </select>
-      </div>
-
+      <select [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)"
+        style="padding: 0.5rem 2rem 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #ffffff; color: #334155; font-size: 1rem; min-width: 200px; cursor: pointer; outline: none;">
+        <option *ngFor="let opt of opcionesEstado" [ngValue]="opt.value">
+          {{ opt.label }}
+        </option>
+      </select>
     </div>
 
-    <p-table [value]="proyectosFiltrados()" [rows]="5" [paginator]="true" 
-             [rowsPerPageOptions]="[5, 10, 20]" styleClass="p-datatable-striped">
+
+    <p-table [value]="proyectosFiltrados()" [rows]="10" [paginator]="true" styleClass="p-datatable-striped">
       <ng-template pTemplate="header">
         <tr>
-          <th pSortableColumn="nombre">Proyecto <p-sortIcon field="nombre"></p-sortIcon></th>
-          <th pSortableColumn="cliente.nombre">Cliente <p-sortIcon field="cliente.nombre"></p-sortIcon></th>
-          <th pSortableColumn="estado" style="width: 12rem">Estado <p-sortIcon field="estado"></p-sortIcon></th>
+          <th>Proyecto</th>
+          <th>Cliente</th>
+          <th>Estado</th>
         </tr>
       </ng-template>
-      
       <ng-template pTemplate="body" let-proyecto>
-        <tr>
-          <td style="font-weight: 500;">{{ proyecto.nombre }}</td>
+                <tr>
+          <td>
+            <span 
+              (click)="irAlProyecto($event, proyecto.id)" 
+              style="cursor: pointer; font-weight: 600; color: #2563eb; text-decoration: none;"
+              onmouseover="this.style.textDecoration='underline'" 
+              onmouseout="this.style.textDecoration='none'">
+              {{ proyecto.nombre }}
+            </span>
+          </td>
+          
           <td>
             @if (proyecto.cliente) {
-              {{ proyecto.cliente.nombre }}
+              <span 
+                (click)="irAlCliente($event, proyecto.cliente.nombre)" 
+                style="cursor: pointer; color: #2563eb; font-weight: 500; text-decoration: none;"
+                onmouseover="this.style.textDecoration='underline'" 
+                onmouseout="this.style.textDecoration='none'">
+                <i class="pi pi-user mr-1" style="color: #64748b; font-size: 0.9rem;"></i>
+                {{ proyecto.cliente.nombre }}
+              </span>
             } @else {
-              <span style="color: #94a3b8; font-style: italic;">Sin cliente asignado</span>
+              <span style="color: #94a3b8; font-style: italic;">Proyecto Interno</span>
             }
           </td>
+          
           <td>
-            <p-tag [value]="proyecto.estado" [severity]="proyecto.estado === 'ACTIVO' ? 'success' : proyecto.estado === 'FINALIZADO' ? 'info' : 'danger'" />
+            <p-tag [value]="proyecto.estado" [severity]="proyecto.estado === 'ACTIVO' ? 'success' : 'info'"></p-tag>
           </td>
         </tr>
-      </ng-template>
 
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="3" style="text-align: center; padding: 2rem; color: #64748b;">
-            No se encontraron proyectos que coincidan con los criterios de búsqueda establecidos.
-          </td>
-        </tr>
       </ng-template>
     </p-table>
   </p-card>
