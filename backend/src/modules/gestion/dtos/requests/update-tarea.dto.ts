@@ -11,4 +11,12 @@ export class UpdateTareaDto extends PartialType(CreateTareaDto) {
   @IsEnum(EstadosTareasEnum)
   @IsOptional()
   estado?: EstadosTareasEnum;
+
+  @ApiProperty({
+    description: 'Bandera o fecha para marcar el inicio operativo de la tarea',
+    required: false,
+    example: true
+  })
+  @IsOptional()
+  fechaInicio?: any;
 }

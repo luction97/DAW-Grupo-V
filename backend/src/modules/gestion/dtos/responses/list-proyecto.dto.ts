@@ -16,5 +16,8 @@ export class ListProyectoDTO {
   fechaObjetivo!: string;
 
   @ApiProperty()
+  fechaCreacion!: string;
+
+  @ApiProperty()
   cliente!: ListClienteDTO;
 }

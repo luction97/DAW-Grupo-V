@@ -90,6 +90,12 @@ export class ProyectosService {
             ? p.fechaObjetivo
             : p.fechaObjetivo.toISOString().split('T')[0];
       }
+      if (p.fechaCreacion) {
+        dto.fechaCreacion =
+          typeof p.fechaCreacion === 'string'
+            ? p.fechaCreacion
+            : p.fechaCreacion.toISOString().split('T')[0];
+      }
       if (p.cliente) {
         dto.cliente = new ListClienteDTO();
         dto.cliente.id = p.cliente.id;
@@ -124,6 +130,12 @@ export class ProyectosService {
           ? proyecto.fechaObjetivo
           : proyecto.fechaObjetivo.toISOString().split('T')[0];
     }
+    if (proyecto.fechaCreacion) {
+      dto.fechaCreacion =
+        typeof proyecto.fechaCreacion === 'string'
+          ? proyecto.fechaCreacion
+          : proyecto.fechaCreacion.toISOString().split('T')[0];
+    }
     if (proyecto.cliente) {
       dto.cliente = proyecto.cliente.nombre;
     }
@@ -133,6 +145,18 @@ export class ProyectosService {
       tareaDto.id = t.id;
       tareaDto.descripcion = t.descripcion;
       tareaDto.estado = t.estado;
+      if (t.fechaInicio) {
+        tareaDto.fechaInicio =
+          typeof t.fechaInicio === 'string'
+            ? t.fechaInicio
+            : t.fechaInicio.toISOString().split('T')[0];
+      }
+      if (t.fechaFinalizacion) {
+        tareaDto.fechaFinalizacion =
+          typeof t.fechaFinalizacion === 'string'
+            ? t.fechaFinalizacion
+            : t.fechaFinalizacion.toISOString().split('T')[0];
+      }
       tareas.push(tareaDto);
     }
 

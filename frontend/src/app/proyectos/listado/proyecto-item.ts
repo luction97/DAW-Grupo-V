@@ -5,5 +5,6 @@ export interface ProyectoItem{
     nombre: string;
     estado: string;
     fechaObjetivo: string;
-    cliente: ClienteItem;
+    fechaCreacion?: string;
+    cliente?: ClienteItem;
 }

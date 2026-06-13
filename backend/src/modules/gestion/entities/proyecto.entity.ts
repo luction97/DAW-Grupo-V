@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -26,6 +27,10 @@ export class Proyecto {
 
   @Column({ name: 'fecha_objetivo', type: 'date', nullable: true })
   fechaObjetivo!: Date | null;
+
+  // NUEVO: Automatiza la fecha de alta en la BD, pero permite sobrescritura manual en el seed
+  @CreateDateColumn({ name: 'fecha_creacion', type: 'timestamp' })
+  fechaCreacion!: Date;
 
   @ManyToOne(() => Cliente, { nullable: true })
   @JoinColumn({ name: 'id_cliente' })
