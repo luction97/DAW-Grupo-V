@@ -1,0 +1,27 @@
+<div class="login-container">
+  <div class="login-banner">
+    <div class="login-banner-content">
+      <img src="/assets/isotipo.webp" alt="PROYECTUM" class="login-banner-isotipo" />
+      <h1 class="login-brand">PROYECTUM</h1>
+      <p class="login-claim">Plataforma Empresarial</p>
+      <p class="login-description">Gestión operativa de proyectos, clientes y tareas para equipos corporativos.</p>
+    </div>
+  </div>
+  <div class="login-form-wrapper">
+    <div class="login-card">
+      <h2 class="login-title">Acceder</h2>
+      <p class="login-subtitle">Ingresá tus credenciales para continuar</p>
+      <form [formGroup]="form" class="login-form">
+        <div class="field">
+          <label for="nombre" class="field-label">Usuario</label>
+          <input pInputText id="nombre" type="text" placeholder="Nombre de usuario" formControlName="nombre" />
+        </div>
+        <div class="field">
+          <label for="clave" class="field-label">Clave</label>
+          <p-password id="clave" formControlName="clave" [feedback]="false" autocomplete="off" placeholder="Clave de acceso" [style]="{'width':'100%'}"></p-password>
+        </div>
+        <p-button label="Iniciar sesión" (click)="iniciarSesion()" [fluid]="true" severity="primary" styleClass="login-button"></p-button>
+      </form>
+    </div>
+  </div>
+</div>
