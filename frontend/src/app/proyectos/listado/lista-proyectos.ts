@@ -62,6 +62,23 @@ export class ListaProyectos implements OnInit {
     this.router.navigate(["/proyectos", proyecto.id, "tareas"]);
   }
 
+  exportarProyectos(): void {
+    this.ProyectosApi.exportarCsv().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'proyectos.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.messageService.add({ severity: 'success', summary: 'Exportado', detail: 'Proyectos exportados a CSV correctamente' });
+      },
+      error: () => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al exportar los proyectos a CSV' });
+      }
+    });
+  }
+
   // Método modular para redirigir a la Agenda de Agustín o a tus Estadísticas
   navegarA(ruta: string): void {
     this.router.navigate([`/proyectos/${ruta}`]);
