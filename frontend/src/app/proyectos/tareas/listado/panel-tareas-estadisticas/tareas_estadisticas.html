@@ -1,0 +1,154 @@
+<p-toast></p-toast>
+
+<div class="panel-container">
+  <header class="panel-header">
+    <button pButton type="button" icon="pi pi-arrow-left" class="p-button-text p-button-secondary" (click)="volver()">
+      Volver a Proyectos
+    </button>
+    <h2>Dashboard General de Control</h2>
+    <p class="subtitle">Métricas Operativas y Estado Global de Tareas</p>
+  </header>
+
+  <section class="metrics-grid">
+    <div class="card-wrapper">
+      <p-card styleClass="metric-card total">
+        <div class="metric-content">
+          <div class="metric-text">
+            <span class="label">Proyectos Activos</span>
+            <span class="value">{{ proyectosActivosCount() }}</span>
+          </div>
+          <i class="pi pi-briefcase metric-icon-png"></i>
+        </div>
+      </p-card>
+    </div>
+
+    <div class="card-wrapper">
+      <p-card styleClass="metric-card pendiente">
+        <div class="metric-content">
+          <div class="metric-text">
+            <span class="label">Total Pendientes</span>
+            <span class="value">{{ totalTareasPendientes() }}</span>
+          </div>
+          <i class="pi pi-exclamation-circle metric-icon-png"></i>
+        </div>
+      </p-card>
+    </div>
+
+    <div class="card-double-width">
+      <p-card styleClass="metric-card completada">
+        <div class="metric-content" style="display: block;">
+          <span class="label" style="margin-bottom: 0.5rem; display: block;">Proyectos por Cliente</span>
+          <div style="max-height: 80px; overflow-y: auto;">
+            <div *ngFor="let item of proyectosPorCliente()" style="display: flex; justify-content: space-between; margin-bottom: 0.25rem; font-size: 0.9rem;">
+              <strong style="color: #334155;">{{ item.cliente }}:</strong>
+              <span class="badge badge-progreso">{{ item.cantidad }} Proj.</span>
+            </div>
+            <div *ngIf="proyectosPorCliente().length === 0" style="color: #94a3b8; font-size: 0.85rem;">No hay clientes registrados</div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </section>
+
+  <section class="alert-zone-grid" style="display: flex; gap: 1.5rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
+    <div class="alert-box-vencido" style="flex: 1; min-width: 300px; border: 1px solid #fca5a5; background-color: #fef2f2; border-radius: 8px; padding: 1.25rem;">
+      <h3 style="color: #991b1b; margin-top: 0; margin-bottom: 0.5rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="pi pi-exclamation-triangle"></i> Proyectos Vencidos
+      </h3>
+      <div *ngIf="alertasTemporales().vencidos.length === 0" style="color: #991b1b; font-size: 0.9rem; font-style: italic;">Sin desviaciones temporales detectadas.</div>
+      <ul *ngIf="alertasTemporales().vencidos.length > 0" style="padding-left: 1.2rem; margin: 0; color: #7f1d1d; font-size: 0.95rem;">
+        <li *ngFor="let p of alertasTemporales().vencidos" style="margin-bottom: 0.25rem;">
+          <a [routerLink]="['/proyectos', p.id]" style="color: #b91c1c; font-weight: bold; text-decoration: none; cursor: pointer;">
+            {{ p.nombre }}
+          </a> 
+          <span style="color: #7f1d1d;"> (Plazo expiró: {{ p.fechaObjetivo }})</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="alert-box-critico" style="flex: 1; min-width: 300px; border: 1px solid #fde047; background-color: #fefce8; border-radius: 8px; padding: 1.25rem;">
+      <h3 style="color: #854d0e; margin-top: 0; margin-bottom: 0.5rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="pi pi-clock"></i> Próximos a Vencer (7 días)
+      </h3>
+      <div *ngIf="alertasTemporales().proximos.length === 0" style="color: #854d0e; font-size: 0.9rem; font-style: italic;">No hay entregas críticas esta semana.</div>
+      <ul *ngIf="alertasTemporales().proximos.length > 0" style="padding-left: 1.2rem; margin: 0; color: #713f12; font-size: 0.95rem;">
+        <li *ngFor="let p of alertasTemporales().proximos" style="margin-bottom: 0.25rem;">
+          <a [routerLink]="['/proyectos', p.id]" style="color: #a16207; font-weight: bold; text-decoration: none; cursor: pointer;">
+            {{ p.nombre }}
+          </a> 
+          <span style="color: #713f12;"> (Entrega: {{ p.fechaObjetivo }})</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="charts-zone-grid" style="display: flex; gap: 1.5rem; margin-bottom: 3rem; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 320px;">
+      <p-card header="Volumen Histórico de Proyectos (Mensual)">
+        <div style="display: flex; justify-content: center; padding-top: 1rem;">
+          <svg width="380" height="140" style="background-color: #f8fafc; border-radius: 6px;">
+            <line x1="15" y1="110" x2="365" y2="110" stroke="#cbd5e1" stroke-width="2"/>
+            <g *ngFor="let b of graficoMensual()">
+              <text [attr.x]="b.x + 10" [attr.y]="b.y - 5" text-anchor="middle" style="font-size: 10px; fill: #64748b; font-weight: bold;">{{ b.valor }}</text>
+              <rect [attr.x]="b.x" [attr.y]="b.y" width="20" [attr.height]="b.height" fill="#6366f1" rx="3"/>
+              <text [attr.x]="b.x + 10" y="128" text-anchor="middle" style="font-size: 11px; fill: #475569;">{{ b.etiqueta }}</text>
+            </g>
+          </svg>
+        </div>
+      </p-card>
+    </div>
+
+    <div style="flex: 1; min-width: 320px;">
+      <p-card header="Eficiencia del Equipo (Tareas Finalizadas)">
+        <div style="display: flex; justify-content: center; padding-top: 1rem;">
+          <svg width="380" height="140" style="background-color: #f8fafc; border-radius: 6px;">
+            <line x1="15" y1="110" x2="365" y2="110" stroke="#cbd5e1" stroke-width="2"/>
+            <g *ngFor="let b of graficoTareasSemanas()">
+              <text [attr.x]="b.x + 15" [attr.y]="b.y - 5" text-anchor="middle" style="font-size: 10px; fill: #64748b; font-weight: bold;">{{ b.valor }}</text>
+              <rect [attr.x]="b.x" [attr.y]="b.y" width="30" [attr.height]="b.height" fill="#10b981" rx="3"/>
+              <text [attr.x]="b.x + 15" y="128" text-anchor="middle" style="font-size: 11px; fill: #475569;">{{ b.etiqueta }}</text>
+            </g>
+          </svg>
+        </div>
+      </p-card>
+    </div>
+  </section>
+
+  <section class="kanban-board">
+    <div class="kanban-column column-pendiente">
+      <h3>Pendientes ({{ tareasPendientes().length }})</h3>
+      <div class="card-list">
+        <div class="kanban-card" *ngFor="let tarea of tareasPendientes()">
+          <small style="color: #3b82f6; font-weight: 700; text-transform: uppercase;">{{ tarea.proyectoNombre }}</small>
+          <h4 style="margin-top: 0.25rem;">{{ tarea.descripcion }}</h4>
+          <span class="badge badge-pendiente">Pendiente</span>
+        </div>
+        <div class="empty-state" *ngIf="tareasPendientes().length === 0">Sin tareas pendientes</div>
+      </div>
+    </div>
+
+    <div class="kanban-column column-progreso">
+      <h3>En Progreso ({{ tareasEnProgreso().length }})</h3>
+      <div class="card-list">
+        <div class="kanban-card" *ngFor="let tarea of tareasEnProgreso()">
+          <small style="color: #3b82f6; font-weight: 700; text-transform: uppercase;">{{ tarea.proyectoNombre }}</small>
+          <h4 style="margin-top: 0.25rem;">{{ tarea.descripcion }}</h4>
+          <span class="badge badge-progreso">En Progreso</span>
+        </div>
+        <div class="empty-state" *ngIf="tareasEnProgreso().length === 0">Sin tareas en progreso</div>
+      </div>
+    </div>
+
+    <div class="kanban-column column-completada">
+      <h3>Finalizadas ({{ tareasFinalizadas().length }})</h3>
+      <div class="card-list">
+        <div class="kanban-card" *ngFor="let tarea of tareasFinalizadas()">
+          <small style="color: #3b82f6; font-weight: 700; text-transform: uppercase;">{{ tarea.proyectoNombre }}</small>
+          <h4 style="margin-top: 0.25rem;">{{ tarea.descripcion }}</h4>
+          <span class="badge badge-completada">Finalizada</span>
+        </div>
+        <div class="empty-state" *ngIf="tareasFinalizadas().length === 0">Sin tareas finalizadas</div>
+      </div>
+    </div>
+  </section>
+</div>

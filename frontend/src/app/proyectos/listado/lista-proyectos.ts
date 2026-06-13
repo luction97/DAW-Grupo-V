@@ -8,24 +8,22 @@ import { LucideFolderKanban } from '@lucide/angular';
 import { TooltipModule } from 'primeng/tooltip';
 import { EditorProyecto } from "../gestion/editor-proyecto";
 import { Router } from "@angular/router";
+import { CardModule } from "primeng/card"; // Importado para el botón-tarjeta
 
 @Component({
   selector: "app-lista-proyectos",
   templateUrl: "./lista-proyectos.html",
   styleUrls: ["./lista-proyectos.css"],
-  imports: [ButtonModule, TagModule, LucideFolderKanban, TooltipModule, EditorProyecto]
+  imports: [ButtonModule, TagModule, LucideFolderKanban, TooltipModule, EditorProyecto, CardModule]
 })
 export class ListaProyectos implements OnInit {
 
   private readonly messageService: MessageService = inject(MessageService);
-
   private readonly ProyectosApi: ProyectosApi = inject(ProyectosApi);
   private readonly router: Router = inject(Router);
 
   proyectos: WritableSignal<ProyectoItem[]> = signal([]);
-
   dialogoVisible: WritableSignal<boolean> = signal(false);
-
   proyectoActual: WritableSignal<ProyectoItem | null> = signal<ProyectoItem | null>(null);
 
   constructor() {
@@ -62,6 +60,11 @@ export class ListaProyectos implements OnInit {
 
   verTareas(proyecto: ProyectoItem): void {
     this.router.navigate(["/proyectos", proyecto.id, "tareas"]);
+  }
+
+  // Método modular para redirigir a la Agenda de Agustín o a tus Estadísticas
+  navegarA(ruta: string): void {
+    this.router.navigate([`/proyectos/${ruta}`]);
   }
 
   calcularEstadoTemporal(proyecto: ProyectoItem): { texto: string; severity: 'success' | 'warn' | 'danger'; dias: number } | null {

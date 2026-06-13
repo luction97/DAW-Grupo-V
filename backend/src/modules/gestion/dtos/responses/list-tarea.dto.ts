@@ -10,4 +10,10 @@ export class ListTareaDTO {
 
   @ApiProperty()
   estado!: EstadosTareasEnum;
+
+  @ApiProperty()
+  fechaInicio!: string;
+
+  @ApiProperty()
+  fechaFinalizacion!: string;
 }

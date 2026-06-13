@@ -13,6 +13,9 @@ export class ProyectoDTO {
   fechaObjetivo!: string;
 
   @ApiProperty()
+  fechaCreacion!: string;
+
+  @ApiProperty()
   cliente!: string;
 
   @ApiProperty()

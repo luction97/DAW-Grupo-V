@@ -22,6 +22,14 @@ export class Tarea {
   @Column({ name: 'id_proyecto' })
   idProyecto!: number;
 
+  // NUEVO: Registra el inicio operativo de la tarea
+  @Column({ name: 'fecha_inicio', type: 'timestamp', nullable: true })
+  fechaInicio!: Date | null;
+
+  // NUEVO: Registra la finalización de la tarea
+  @Column({ name: 'fecha_finalizacion', type: 'timestamp', nullable: true })
+  fechaFinalizacion!: Date | null;
+
   @ManyToOne(() => Proyecto)
   @JoinColumn({ name: 'id_proyecto' })
   proyecto!: Proyecto;

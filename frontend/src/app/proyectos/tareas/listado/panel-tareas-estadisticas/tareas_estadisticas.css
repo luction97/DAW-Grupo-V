@@ -1,0 +1,191 @@
+/* Contenedor Principal */
+.panel-container {
+  padding: 2rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+}
+
+/* Cabecera */
+.panel-header {
+  margin-bottom: 2rem;
+}
+
+.panel-header h2 {
+  font-size: 1.85rem;
+  color: #1e293b;
+  margin: 0.75rem 0 0.25rem 0;
+  font-weight: 700;
+}
+
+.panel-header .subtitle {
+  color: #64748b;
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Icono nativo de la cabecera */
+.panel-header .pi-arrow-left {
+  font-size: 0.875rem;
+  margin-right: 0.5rem;
+}
+
+/* Rejilla de Estadísticas (Sección Superior) */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+::ng-deep .metric-card {
+  border-radius: 12px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+  background: #ffffff !important;
+}
+
+.metric-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.metric-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-text .label {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metric-text .value {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 2.5rem;
+  margin-top: 0.25rem;
+}
+
+/* Iconos de las Tarjetas */
+.metric-icon-png {
+  font-size: 2.5rem;
+  color: #94a3b8;
+}
+
+/* Bordes de Color para Identificación de Métricas */
+::ng-deep .metric-card.total { border-left: 5px solid #3b82f6 !important; }
+::ng-deep .metric-card.pendiente { border-left: 5px solid #ef4444 !important; }
+::ng-deep .metric-card.progreso { border-left: 5px solid #f59e0b !important; }
+::ng-deep .metric-card.completada { border-left: 5px solid #10b981 !important; }
+
+/* Cambiar color específico del icono de progreso giratorio */
+.metric-card.progreso .metric-icon-png {
+  color: #f59e0b;
+}
+
+/* Estructura del Tablero Kanban (Sección Inferior) */
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* Columnas */
+.kanban-column {
+  background-color: #f1f5f9;
+  border-radius: 10px;
+  padding: 1.25rem;
+  border: 1px solid #e2e8f0;
+}
+
+.kanban-column h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #334155;
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+/* Contenedores de tarjetas por columna */
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 350px;
+}
+
+/* Tarjeta Kanban Individual */
+.kanban-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kanban-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.kanban-card h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.4;
+}
+
+/* Badges de Estado dentro de las tarjetas */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-pendiente { background-color: #fee2e2; color: #ef4444; }
+.badge-progreso { background-color: #fef3c7; color: #d97706; }
+.badge-completada { background-color: #d1fae5; color: #059669; }
+
+/* Indicadores visuales en el borde izquierdo de las columnas */
+.column-pendiente { border-top: 4px solid #ef4444; }
+.column-progreso { border-top: 4px solid #f59e0b; }
+.column-completada { border-top: 4px solid #10b981; }
+
+/* Estado Vacío */
+.empty-state {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 3rem 1rem;
+  border: 2px dashed #cbd5e1;
+  border-radius: 8px;
+  background-color: #f8fafc;
+}
+
+/* Adaptabilidad para pantallas medianas o chicas */
+@media (max-width: 1024px) {
+  .kanban-board {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .card-list {
+    min-height: auto;
+  }
+}
