@@ -16,7 +16,7 @@ import { ListProyectoDTO } from '../dtos/responses/list-proyecto.dto';
 import { ProyectoDTO } from '../dtos/responses/proyecto.dto';
 import { ProyectosService } from '../services/proyectos.service';
 import { AuthGuard } from '../../auth/guards/auth.guard';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { Parser } from 'json2csv';
 
 @Controller('proyectos')
