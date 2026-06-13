@@ -8,12 +8,15 @@ import { catchError } from "rxjs/operators";
 import { ButtonModule } from "primeng/button";
 import { CardModule } from "primeng/card";
 import { ToastModule } from "primeng/toast";
+import { TableModule } from "primeng/table";
 
 import { TareaItem } from "../tarea-item"; 
 import { EstadoTarea } from "../../estado-tarea";
 import { ProyectosApi } from "../../../listado/proyectos-api"; 
 import { ProyectoItem } from "../../../listado/proyecto-item"; 
 import { ProyectoDetalleApi } from "../../listado/detalle-proyecto-api";
+import { EditorTareaApi } from "../../gestion/editor-tarea-api";
+import { ActualizarTarea } from "../../gestion/actualizar-tarea";
 
 interface BarraSvg {
   etiqueta: string;
@@ -28,28 +31,74 @@ interface BarraSvg {
   standalone: true,
   templateUrl: "./tareas_estadisticas.html",
   styleUrls: ["./tareas_estadisticas.css"],
-  imports: [CommonModule, RouterModule, ButtonModule, CardModule, ToastModule],
+  imports: [CommonModule, RouterModule, ButtonModule, CardModule, ToastModule, TableModule],
   providers: [MessageService]
 })
 export class PanelTareasEstadisticas implements OnInit {
   private readonly router = inject(Router);
   private readonly proyectosApi = inject(ProyectosApi);
   private readonly proyectoDetalleApi = inject(ProyectoDetalleApi);
+  private readonly editorTareaApi = inject(EditorTareaApi);
   private readonly messageService = inject(MessageService);
 
   proyectos: WritableSignal<any[]> = signal([]);
   todasLasTareas: WritableSignal<any[]> = signal([]);
+  estadoSeleccionado: WritableSignal<string | null> = signal(null);
 
-  proyectosActivosCount: Signal<number> = computed(() => this.proyectos().length);
-  totalTareasPendientes: Signal<number> = computed(() => this.tareasPendientes().length);
+  // Exponer el enum a la plantilla HTML para evaluar los estados en los botones
+  readonly EstadoTareaEnum = EstadoTarea;
 
-  proyectosPorCliente: Signal<{ cliente: string; cantidad: number }[]> = computed(() => {
-    const mapa = new Map<string, number>();
-    this.proyectos().forEach(p => {
-      const clienteNombre = p.cliente?.nombre || 'Proyecto Interno'; 
-      mapa.set(clienteNombre, (mapa.get(clienteNombre) || 0) + 1);
-    });
-    return Array.from(mapa.entries()).map(([cliente, cantidad]) => ({ cliente, cantidad }));
+  proyectosActivosCount: Signal<number> = computed(() => 
+    this.proyectos().filter(p => p.estado === 'ACTIVO').length
+  );
+
+  proyectosFinalizadosCount: Signal<number> = computed(() => 
+    this.proyectos().filter(p => p.estado === 'FINALIZADO').length
+  );
+
+  proyectosBajasCount: Signal<number> = computed(() => 
+    this.proyectos().filter(p => p.estado === 'BAJA').length
+  );
+
+  totalTareasPendientes: Signal<number> = computed(() => 
+    this.tareasPendientes().length + this.tareasEnProgreso().length
+  );
+
+  proyectosDesglosados = computed(() => {
+    const estado = this.estadoSeleccionado();
+    if (!estado) return [];
+
+    const hoy = new Date();
+    hoy.setHours(0,0,0,0);
+
+    return this.proyectos()
+      .filter(p => p.estado === estado)
+      .map(p => {
+        const fCreacion = p.fecha_creacion || p.fechaCreacion ? new Date(p.fecha_creacion || p.fechaCreacion) : null;
+        const fObjetivo = p.fechaObjetivo ? new Date(p.fechaObjetivo) : null;
+        let metricaTiempo = 'N/D';
+
+        if (estado === 'ACTIVO' && fCreacion) {
+          const diff = hoy.getTime() - fCreacion.getTime();
+          const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+          metricaTiempo = `En desarrollo: ${dias} días`;
+
+          if (fObjetivo && hoy.getTime() > fObjetivo.getTime()) {
+            const diffRetraso = hoy.getTime() - fObjetivo.getTime();
+            const diasRetraso = Math.floor(diffRetraso / (1000 * 60 * 60 * 24));
+            metricaTiempo += ` (Retrasado por ${diasRetraso} días)`;
+          }
+        } else if (estado === 'FINALIZADO' && fCreacion) {
+          const fFin = fObjetivo || hoy; 
+          const diff = fFin.getTime() - fCreacion.getTime();
+          const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+          metricaTiempo = `Desarrollo total: ${dias} días`;
+        } else if (estado === 'BAJA') {
+          metricaTiempo = 'Proyecto descartado';
+        }
+
+        return { ...p, tiempoInfo: metricaTiempo };
+      });
   });
 
   alertasTemporales = computed(() => {
@@ -71,13 +120,9 @@ export class PanelTareasEstadisticas implements OnInit {
       return dias >= 0 && dias <= 7;
     });
 
-    return {
-      vencidos: proyectosVencidos,
-      proximos: proyectosProximos
-    };
+    return { vencidos: proyectosVencidos, proximos: proyectosProximos };
   });
 
-  // --- GRÁFICO 1: VOLUMEN MENSUAL RE-INGENIERADO (EXTRACCIÓN DIRECTA DE TEXTO) ---
   graficoMensual = computed<BarraSvg[]>(() => {
     const mesesLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
     const conteo = [0, 0, 0, 0, 0, 0];
@@ -85,51 +130,33 @@ export class PanelTareasEstadisticas implements OnInit {
     this.proyectos().forEach(p => {
       const valorFecha = p.fecha_creacion || p.fechaCreacion;
       if (!valorFecha) return;
-
-      // Convertimos a string ISO puro para evitar problemas si viene objeto Date
       const fechaStr = typeof valorFecha === 'object' ? valorFecha.toISOString() : String(valorFecha);
-      
-      // Buscamos el patrón YYYY-MM-DD usando expresión regular
       const match = fechaStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
       if (match) {
-        const mesIdx = parseInt(match[2], 10) - 1; // El grupo [2] es el mes
-        if (mesIdx >= 0 && mesIdx < 6) {
-          conteo[mesIdx]++;
-        }
+        const mesIdx = parseInt(match[2], 10) - 1;
+        if (mesIdx >= 0 && mesIdx < 6) conteo[mesIdx]++;
       }
     });
 
     const maxValor = Math.max(...conteo, 1);
-    const altoMaximoSvg = 90;
-
     return conteo.map((valor, index) => {
-      const height = (valor / maxValor) * altoMaximoSvg;
-      return {
-        etiqueta: mesesLabels[index],
-        valor: valor,
-        x: index * 60 + 40,
-        y: 110 - height,
-        height: height
-      };
+      const height = (valor / maxValor) * 90;
+      return { etiqueta: mesesLabels[index], valor, x: index * 60 + 40, y: 110 - height, height };
     });
   });
 
-  // --- GRÁFICO 2: PRODUCTIVIDAD SEMANAL RE-INGENIERADO (EXTRACCIÓN DIRECTA DE TEXTO) ---
   graficoTareasSemanas = computed<BarraSvg[]>(() => {
-    const semanasLabels = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'];
+    const intervalosLabels = ['Días 1-7', 'Días 8-14', 'Días 15-21', 'Días 22+'];
     const conteo = [0, 0, 0, 0];
 
     this.todasLasTareas().forEach(t => {
       if (t.estado !== EstadoTarea.FINALIZADA) return;
-
       const valorFecha = t.fecha_finalizacion || t.fechaFinalizacion;
       if (!valorFecha) return;
-      
       const fechaStr = typeof valorFecha === 'object' ? valorFecha.toISOString() : String(valorFecha);
-      
       const match = fechaStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
       if (match) {
-        const dia = parseInt(match[3], 10); // El grupo [3] es el día del mes
+        const dia = parseInt(match[3], 10);
         if (dia <= 7) conteo[0]++;
         else if (dia <= 14) conteo[1]++;
         else if (dia <= 21) conteo[2]++;
@@ -138,32 +165,20 @@ export class PanelTareasEstadisticas implements OnInit {
     });
 
     const maxValor = Math.max(...conteo, 1);
-    const altoMaximoSvg = 90;
-
     return conteo.map((valor, index) => {
-      const height = (valor / maxValor) * altoMaximoSvg;
-      return {
-        etiqueta: semanasLabels[index],
-        valor: valor,
-        x: index * 80 + 55,
-        y: 110 - height,
-        height: height
-      };
+      const height = (valor / maxValor) * 90;
+      return { etiqueta: intervalosLabels[index], valor, x: index * 85 + 30, y: 110 - height, height };
     });
   });
 
+  // Identifica tareas estrictamente PENDIENTES (sin fechaInicio / fecha_inicio)
   tareasPendientes: Signal<any[]> = computed(() => 
-    this.todasLasTareas().filter(t => {
-      const tieneInicio = t.fecha_inicio || t.fechaInicio;
-      return t.estado === EstadoTarea.PENDIENTE && !tieneInicio;
-    })
+    this.todasLasTareas().filter(t => t.estado === EstadoTarea.PENDIENTE && !(t.fecha_inicio || t.fechaInicio))
   );
 
+  // Identifica tareas EN PROGRESO (estado PENDIENTE pero con fechaInicio / fecha_inicio registrada)
   tareasEnProgreso: Signal<any[]> = computed(() => 
-    this.todasLasTareas().filter(t => {
-      const tieneInicio = t.fecha_inicio || t.fechaInicio;
-      return t.estado === EstadoTarea.PENDIENTE && tieneInicio;
-    })
+    this.todasLasTareas().filter(t => t.estado === EstadoTarea.PENDIENTE && (t.fecha_inicio || t.fechaInicio))
   );
 
   tareasFinalizadas: Signal<any[]> = computed(() => 
@@ -178,13 +193,7 @@ export class PanelTareasEstadisticas implements OnInit {
     this.proyectosApi.buscarProyectos().subscribe({
       next: (listaProyectos: ProyectoItem[]) => {
         if (listaProyectos.length === 0) return;
-
-        const peticionesDetalle = listaProyectos.map(p => 
-          this.proyectoDetalleApi.buscarProyecto(p.id).pipe(
-            catchError(() => of(null))
-          )
-        );
-
+        const peticionesDetalle = listaProyectos.map(p => this.proyectoDetalleApi.buscarProyecto(p.id).pipe(catchError(() => of(null))));
         forkJoin(peticionesDetalle).subscribe({
           next: (detalles) => {
             const listaUnificada: any[] = [];
@@ -193,23 +202,112 @@ export class PanelTareasEstadisticas implements OnInit {
                 projDetalle.tareas.forEach((t: TareaItem) => {
                   listaUnificada.push({
                     ...t,
-                    proyectoNombre: listaProyectos[index].nombre || 'Sin Nombre'
+                    proyectoId: listaProyectos[index].id, // Mantenemos la referencia del ID del proyecto
+                    proyectoNombre: listaProyectos[index].nombre || 'Sin Nombre',
+                    clienteNombre: listaProyectos[index].cliente?.nombre || 'Proyecto Interno'
                   });
                 });
               }
             });
-            
-            // CONFIGURAMOS LAS DOS SEÑALES JUNTAS AL FINAL
-            // Esto obliga a Angular a redibujar todo el árbol con la data unificada al mismo tiempo
             this.proyectos.set(listaProyectos);
             this.todasLasTareas.set(listaUnificada);
           }
         });
       },
+      error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar las métricas globales' })
+    });
+  }
+
+  // Ejecuta la actualización de estado interactiva del Kanban hacia la API
+  cambiarEstadoTarea(tarea: any, nuevoEstado: EstadoTarea): void {
+    const dto: ActualizarTarea = {
+      descripcion: tarea.descripcion,
+      estado: nuevoEstado
+    };
+
+    // Obtenemos la fecha actual simulada por el sistema
+    const isoFechaActual = new Date().toISOString();
+
+    this.editorTareaApi.actualizarTarea(tarea.proyectoId, tarea.id, dto).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Estado de tarea actualizado.' });
+        
+        // Mutación controlada local para actualizar el Kanban reactivamente sin re-consultar HTTP completo
+        const tareasModificadas = this.todasLasTareas().map(t => {
+          if (t.id === tarea.id) {
+            let fechaInicioActualizada = t.fecha_inicio || t.fechaInicio;
+            let fechaFinActualizada = t.fecha_finalizacion || t.fechaFinalizacion;
+
+            if (nuevoEstado === EstadoTarea.PENDIENTE) {
+              // Si se mueve a "En Progreso" (que operativamente es PENDIENTE con fecha_inicio)
+              fechaInicioActualizada = isoFechaActual;
+              fechaFinActualizada = null;
+            } else if (nuevoEstado === EstadoTarea.FINALIZADA) {
+              fechaFinActualizada = isoFechaActual;
+            }
+
+            return { 
+              ...t, 
+              estado: nuevoEstado,
+              fecha_inicio: fechaInicioActualizada,
+              fechaInicio: fechaInicioActualizada,
+              fecha_finalizacion: fechaFinActualizada,
+              fechaFinalizacion: fechaFinActualizada
+            };
+          }
+          return t;
+        });
+
+        this.todasLasTareas.set(tareasModificadas);
+      },
       error: () => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar las métricas globales' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cambiar el estado de la tarea.' });
       }
     });
+  }
+
+  // Método auxiliar para mover de "En Progreso" de regreso a "Pendiente" (limpiando fechas de inicio)
+  moverAPendienteEstricto(tarea: any): void {
+    const dto: ActualizarTarea = {
+      descripcion: tarea.descripcion,
+      estado: EstadoTarea.PENDIENTE
+    };
+
+    this.editorTareaApi.actualizarTarea(tarea.proyectoId, tarea.id, dto).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Tarea devuelta a Pendiente.' });
+        
+        const tareasModificadas = this.todasLasTareas().map(t => {
+          if (t.id === tarea.id) {
+            return { 
+              ...t, 
+              estado: EstadoTarea.PENDIENTE,
+              fecha_inicio: null,
+              fechaInicio: null,
+              fecha_finalizacion: null,
+              fechaFinalizacion: null
+            };
+          }
+          return t;
+        });
+        this.todasLasTareas.set(tareasModificadas);
+      },
+      error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo revertir el estado.' })
+    });
+  }
+
+  seleccionarEstado(estado: string): void {
+    if (this.estadoSeleccionado() === estado) {
+      this.estadoSeleccionado.set(null);
+    } else {
+      this.estadoSeleccionado.set(estado);
+    }
+  }
+
+  irAlProyectoTareas(event: Event, proyectoId: number): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.router.navigate(['/proyectos', proyectoId, 'tareas']);
   }
 
   volver(): void {
