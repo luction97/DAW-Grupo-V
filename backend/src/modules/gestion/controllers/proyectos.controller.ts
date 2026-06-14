@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { CreateProyectoDto } from '../dtos/requests/create-proyecto.dto';
@@ -15,6 +16,8 @@ import { ListProyectoDTO } from '../dtos/responses/list-proyecto.dto';
 import { ProyectoDTO } from '../dtos/responses/proyecto.dto';
 import { ProyectosService } from '../services/proyectos.service';
 import { AuthGuard } from '../../auth/guards/auth.guard';
+import type { Response } from 'express';
+import { Parser } from 'json2csv';
 
 @Controller('proyectos')
 export class ProyectosController {
@@ -43,6 +46,31 @@ export class ProyectosController {
   @Get()
   async obtenerProyectos(): Promise<ListProyectoDTO[]> {
     return await this.proyectosService.obtenerProyectos();
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Get('export/csv')
+  async exportToCSV(@Res({ passthrough: true }) res: Response) {
+    const proyectos = await this.proyectosService.obtenerProyectos();
+
+    const fields = [
+      { label: 'ID', value: 'id' },
+      { label: 'Nombre', value: 'nombre' },
+      { label: 'Estado', value: 'estado' },
+      { label: 'Fecha Objetivo', value: 'fechaObjetivo' },
+      {
+        label: 'Cliente',
+        value: (row: any) => row.cliente?.nombre || 'Interno',
+      },
+    ];
+
+    const parser = new Parser({ fields });
+    const csv = parser.parse(proyectos);
+
+    res.header('Content-Type', 'text/csv');
+    res.attachment('proyectos.csv');
+    res.send(csv);
   }
 
   @ApiBearerAuth()

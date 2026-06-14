@@ -5,6 +5,7 @@ import { ListaProyectos } from './proyectos/listado/lista-proyectos';
 import { PanelTareasEstadisticas } from './proyectos/tareas/listado/panel-tareas-estadisticas/tareas_estadisticas';
 import { AgendaClientes } from './proyectos/clientes/listado/agenda-clientes/agenda-clientes';
 import { BusquedaAvanzada } from './proyectos/listado/busqueda-avanzada/busqueda-avanzada';
+import { WhatsappBotComponent } from './whatsapp/whatsapp-bot';
 
 export const routes: Routes = [
     {
@@ -28,6 +29,10 @@ export const routes: Routes = [
     {
         path: 'proyectos',
         component: ListaProyectos
+    },
+    {
+        path: 'whatsapp',
+        component: WhatsappBotComponent
     },
     {
         path: "**",

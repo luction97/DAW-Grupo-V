@@ -14,7 +14,7 @@ import { ProyectosService } from './services/proyectos.service';
 @Module({
   controllers: [ClientesController, ProyectosController, TareasController],
   providers: [TareasService, ClientesService, ProyectosService],
-  exports: [],
-  imports: [TypeOrmModule.forFeature([Tarea, Cliente, Proyecto]), AuthModule],
+  exports: [ProyectosService], 
+  imports: [TypeOrmModule.forFeature([Tarea, Cliente, Proyecto]), AuthModule],  
 })
 export class GestionModule {}
