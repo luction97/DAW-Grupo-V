@@ -136,6 +136,61 @@ cd sistema-gestion-proyectos
 ## 📁 Estructura del proyecto
 
 ```
+------ver cual estructura les gusta, arreglar si hace falta la que yo puse y dejar la que quieran--------------
+
+sistema-gestion-proyectos/
+├── frontend/                     # Aplicación cliente (Angular)
+│   ├── .editorconfig
+│   ├── .prettierrc
+│   ├── angular.json              # Configuración de Angular
+│   ├── package.json              # Dependencias del frontend
+│   ├── tsconfig.*.json           # Configuraciones de TypeScript
+│   └── src/
+│       ├── index.html
+│       ├── main.ts
+│       ├── proxy.conf.json
+│       ├── styles.css
+│       ├── assets/               # Recursos estáticos (ej. isotipo.webp)
+│       └── app/                  # Lógica principal de la aplicación
+│           ├── app.ts, app.html, app.routes.ts, app.config.ts
+│           ├── auth/             # Módulo de Autenticación (Login, interceptores, store)
+│           ├── template/         # Plantillas y estructura visual base
+│           ├── whatsapp/         # Interfaz para el bot de WhatsApp
+│           └── proyectos/        # Módulo central de gestión
+│               ├── listado/      # Vistas y lógica para listar proyectos
+│               ├── gestion/      # Creación y edición de proyectos
+│               ├── clientes/     # CRUD y listado de clientes
+│               └── tareas/       # CRUD, listado y estadísticas de tareas
+│
+└── backend/                      # API del servidor (NestJS)
+    ├── .env                      # Variables de entorno
+    ├── .prettierrc
+    ├── ecosystem.config.js       # Configuración para despliegue (ej. PM2)
+    ├── eslint.config.mjs
+    ├── nest-cli.json             # Configuración de NestJS
+    ├── package.json              # Dependencias del backend
+    ├── tsconfig.*.json           # Configuraciones de TypeScript
+    └── src/
+        ├── main.ts               # Punto de entrada de la API
+        ├── app.module.ts         # Módulo raíz de la aplicación
+        ├── database/             # Scripts de base de datos (seeds.ts)
+        └── modules/              # Módulos de la API
+            ├── auth/             # Lógica de autenticación
+            │   ├── controllers/, dtos/, entities/, enums/, guards/, services/
+            ├── gestion/          # Lógica de negocio principal (Clientes, Proyectos, Tareas)
+            │   ├── controllers/  # Controladores (clientes, proyectos, tareas)
+            │   ├── dtos/         # Objetos de transferencia de datos (requests/responses)
+            │   ├── entities/     # Entidades de la base de datos
+            │   ├── enums/        # Enumeraciones de estados
+            │   └── services/     # Lógica de servicios
+            └── whatsapp/         # Integración y servicios del Bot de WhatsApp
+                ├── whatsapp.gateway.ts
+                ├── whatsapp.module.ts
+                └── whatsapp.service.ts
+
+
+-----------------------------------------------------------------------------------------------------
+
 sistema-gestion-proyectos/
 ├── backend/                 # NestJS + TypeORM
 │   ├── src/
@@ -179,6 +234,7 @@ sistema-gestion-proyectos/
 | 5 | Restricción: solo se puede dar de baja un cliente si no tiene proyectos asociados | ✅ |
 | 6 | Restricción: solo se pueden seleccionar clientes en estado "Activo" para un proyecto | ✅ |
 | 7 | Visualización global (todos los usuarios ven los mismos datos) | ✅ |
+| 8 | Bot de WhatsApp para consulta de los clientes (los clientes pueden escribir por WhatsApp y consultar el estado de sus proyectos) | ✅ |
 
 ---
 
